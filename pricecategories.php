@@ -15,25 +15,29 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Price categories settings
+ * Semesters settings
  *
  * @package mod_booking
  * @copyright 2022 Wunderbyte GmbH <info@wunderbyte.at>
- * @author Georg Maißer, Bernhard Fischer
+ * @author Bernhard Fischer
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use mod_booking\form\pricecategories_form;
+use mod_booking\form\dynamicpricecategoriesform;
+use mod_booking\output\price_categories;
 
-require_once(__DIR__ . '/../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
+require_once('../../config.php');
+require_once($CFG->libdir.'/adminlib.php');
 
 global $OUTPUT;
 
 // No guest autologin.
 require_login(0, false);
 
-admin_externalpage_setup('modbookingpricecategories');
+$cmid = optional_param('id', 0, PARAM_INT);
+
+admin_externalpage_setup('modbookingpricecategories', '', [],
+    new moodle_url('/mod/booking/pricecategories.php'));
 
 $settingsurl = new moodle_url('/admin/category.php', ['category' => 'modbookingfolder']);
 
@@ -44,126 +48,48 @@ $PAGE->set_title(
     format_string($SITE->shortname) . ': ' . get_string('pricecategories', 'booking')
 );
 
-$mform = new pricecategories_form($pageurl);
+echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('pricecategories', 'mod_booking'));
 
-if ($mform->is_cancelled()) {
-    // If cancelled, go back to general booking settings.
-    redirect($settingsurl);
+$pricecategoriesform = new dynamicpricecategoriesform();
+$pricecategoriesform->set_data_for_dynamic_submission();
+$renderedpricecategoriesform = $pricecategoriesform->render();
 
-} else if ($data = $mform->get_data()) {
+if ($cmid) {
+    $changepricecategoriesform = new dynamicchangepricecategoriesform();
 
-    $existingpricecategories = $DB->get_records('booking_pricecategories');
-
-    if (empty($existingpricecategories)) {
-        // There are no price categories yet.
-        // Currently there can be up to nine price categories.
-        for ($i = 1; $i <= MAX_PRICE_CATEGORIES; $i++) {
-
-            $pricecategoryordernumx = 'pricecategoryordernum' . $i;
-            $pricecategoryidentifierx = 'pricecategoryidentifier' . $i;
-            $pricecategorynamex = 'pricecategoryname' . $i;
-            $defaultvaluex = 'defaultvalue' . $i;
-            $disablepricecategoryx = 'disablepricecategory' . $i;
-
-            // Only add price categories if a name was entered.
-            if (!empty($data->{$pricecategoryidentifierx})) {
-                $pricecategory = new stdClass();
-                $pricecategory->ordernum = $data->{$pricecategoryordernumx};
-                $pricecategory->identifier = $data->{$pricecategoryidentifierx};
-                $pricecategory->name = $data->{$pricecategorynamex};
-                $pricecategory->defaultvalue = $data->{$defaultvaluex};
-                $pricecategory->disabled = $data->{$disablepricecategoryx};
-
-                $DB->insert_record('booking_pricecategories', $pricecategory);
-            }
-        }
-    } else {
-
-        // There are already existing price categories.
-        // So we need to check for changes.
-        $oldpricecategories = $DB->get_records('booking_pricecategories');
-
-        if ($pricecategorychanges = pricecategories_get_changes($oldpricecategories, $data)) {
-            foreach ($pricecategorychanges['updates'] as $record) {
-                $DB->update_record('booking_pricecategories', $record);
-            }
-            if (count($pricecategorychanges['inserts']) > 0) {
-                $DB->insert_records('booking_pricecategories', $pricecategorychanges['inserts']);
-            }
-        }
-    }
-
-    // In any case, invalidate the cache after updating price categories.
-    cache_helper::purge_by_event('setbackpricecategories');
-
-    redirect($pageurl, get_string('pricecategoriessaved', 'booking'), 5);
-
+    $changepricecategoriesform->set_data_for_dynamic_submission();
+    $renderedchangepricecategoriesform = $changepricecategoriesform->render();
 } else {
-    echo $OUTPUT->header();
-    echo $OUTPUT->heading(new lang_string('pricecategory', 'mod_booking'));
+    $renderedchangepricecategoriesform = '';
+}
+// Do we need this part in price categories?
 
-    echo get_string('pricecategoriessubtitle', 'booking');
+/* $holidaysform = new dynamicholidaysform();
+$holidaysform->set_data_for_dynamic_submission();
+$renderedholidaysform = $holidaysform->render(); */
 
-    // Show the mform.
-    $mform->display();
+$output = $PAGE->get_renderer('mod_booking');
+$data = new price_categories($renderedpricecategoriesform, $renderedchangepricecategoriesform);
+echo $output->render_price_categories($data);
 
-    echo $OUTPUT->footer();
+$existingpricecategories = $DB->get_records('booking_pricecategories');
+$PAGE->requires->js_call_amd(
+    'mod_booking/dynamicpricecategoriesform',
+    'init',
+    ['[data-region=pricecategoriesformcontainer]', dynamicpricecategoriesform::class, $existingpricecategories]
+);
+
+if ($cmid) {
+    $data = new stdClass();
+    $data->cmid = $cmid;
+    $existingpricecategories = $data;
+    $PAGE->requires->js_call_amd(
+    'mod_booking/dynamicchangepricecategoriesform',
+    'init',
+    ['[data-region=changepricecategoriescontainer]', dynamicchangepricecategoriesform::class, $existingpricecategories]
+    );
 }
 
-/**
- * Helper function to return arrays containing all relevant pricecategories update changes.
- * The returned arrays will have the prepared stdClasses for update and insert in booking_pricecategories table.
- *
- * @param $oldpricecategories the existing price categories
- * @param $data the form data
- * @return array
- */
-function pricecategories_get_changes($oldpricecategories, $data) {
 
-    $updates = [];
-    $inserts = [];
-
-    $existingordernumbers = [];
-
-    foreach ($oldpricecategories as $oldpricecategory) {
-        $existingordernumbers[] = $oldpricecategory->ordernum;
-    }
-
-    foreach ($data as $key => $value) {
-        if (preg_match('/pricecategoryid[0-9]/', $key)) {
-            $counter = (int)substr($key, -1);
-
-            if (in_array($counter, $existingordernumbers)) {
-
-                // Create price category object and add to updates.
-                $pricecategory = new stdClass();
-                $pricecategory->id = $value;
-                $pricecategory->ordernum = $data->{'pricecategoryordernum' . $counter};
-                $pricecategory->identifier = $data->{'pricecategoryidentifier' . $counter};
-                $pricecategory->name = $data->{'pricecategoryname' . $counter};
-                $pricecategory->defaultvalue = $data->{'defaultvalue' . $counter};
-                $pricecategory->disabled = $data->{'disablepricecategory' . $counter};
-
-                $updates[] = $pricecategory;
-
-            } else {
-                // Create new price category and add to inserts.
-                if (!empty($data->{'pricecategoryidentifier' . $counter})) {
-                    $pricecategory = new stdClass();
-                    $pricecategory->ordernum = $data->{'pricecategoryordernum' . $counter};
-                    $pricecategory->identifier = $data->{'pricecategoryidentifier' . $counter};
-                    $pricecategory->name = $data->{'pricecategoryname' . $counter};
-                    $pricecategory->defaultvalue = $data->{'defaultvalue' . $counter};
-                    $pricecategory->disabled = $data->{'disablepricecategory' . $counter};
-
-                    $inserts[] = $pricecategory;
-                }
-            }
-        }
-    }
-
-    return [
-            'inserts' => $inserts,
-            'updates' => $updates
-    ];
-}
+echo $OUTPUT->footer();

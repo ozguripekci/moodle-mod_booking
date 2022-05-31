@@ -32,6 +32,11 @@ $string['eventteacher_removed'] = 'Teacher removed';
 $string['showonlymyinstitutions'] = "My institution";
 $string['addusertogroup'] = 'Add user to group: ';
 
+// PriceCategories.php.
+$string['dynamicpricecategory'] = 'Dynamic Price category';
+$string['deletepricebtn'] = 'Delete price';
+$string['addprice'] = 'Add price';
+
 // View.php.
 $string['addmorebookings'] = 'Add more bookings';
 $string['addmorebookings'] = 'Add more bookings';
@@ -1646,6 +1651,7 @@ $string['errorduplicatepricecategoryidentifier'] = 'Price category identifiers n
 $string['errorduplicatepricecategoryname'] = 'Price category names need to be unique.';
 $string['errortoomanydecimals'] = 'Only 2 decimals are allowed.';
 $string['pricecategoriessaved'] = 'Price categories were saved';
+$string['pricedefaultvalue'] = 'Default price value';
 $string['pricecategoriessubtitle'] = '<p>Here you can define different price categories, e.g.
     special price categories for students, employees or externals.
     <b>Be careful:</b> Once you have added a category, you cannot delete it.

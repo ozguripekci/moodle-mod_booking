@@ -618,4 +618,11 @@ class renderer extends plugin_renderer_base {
         $o .= $this->render_from_template('mod_booking/semesters_holidays', $data);
         return $o;
     }
+
+    public function render_price_categories($data) {
+        $o = '';
+        $data = $data->export_for_template($this);
+        $o .= $this->render_from_template('mod_booking/price_categories', $data);
+        return $o;
+    }
 }
