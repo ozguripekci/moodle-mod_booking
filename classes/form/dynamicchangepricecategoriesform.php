@@ -38,7 +38,7 @@ use stdClass;
  * @author Bernhard Fischer
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class dynamicchangepricacategoriesform extends dynamic_form {
+class dynamicchangepricecategoriesform extends dynamic_form {
 
     private $cmid = null;
 
@@ -66,7 +66,7 @@ class dynamicchangepricacategoriesform extends dynamic_form {
     public function set_data_for_dynamic_submission(): void {
 
         $cmid = optional_param('id', 0, PARAM_INT);
-        $choosepricacategories = null;
+        $choosepricecategories = null;
 
         if ($cmid && $cmid != 0) {
             $this->cmid = $cmid;
@@ -77,7 +77,7 @@ class dynamicchangepricacategoriesform extends dynamic_form {
             $cmid = $this->cmid;
         } else if (isset($this->_ajaxformdata['cmid'])) {
             $cmid = $this->_ajaxformdata['cmid'];
-            $choosepricacategories = isset($this->_ajaxformdata['choosepricacategories']) ? $this->_ajaxformdata['choosepricacategories'] : null;
+            $choosepricecategories = isset($this->_ajaxformdata['choosepricecategories']) ? $this->_ajaxformdata['choosepricecategories'] : null;
             $this->cmid = $cmid;
         }
 
@@ -85,7 +85,7 @@ class dynamicchangepricacategoriesform extends dynamic_form {
 
         if ($cmid) {
             $data->cmid = $cmid;
-            $data->choosespricacategories = $choosepricacategoriesr;
+            $data->choosespricacategories = $choosepricecategories;
         }
 
         $this->set_data($data);
@@ -99,7 +99,7 @@ class dynamicchangepricacategoriesform extends dynamic_form {
 
         $data = $this->get_data();
 
-        optiondates_handler::change_pricacategories($data->cmid, $data->choosepricacategories);
+        optiondates_handler::change_pricecategories($data->cmid, $data->choosepricecategories);
 
         return $data;
     }
@@ -113,17 +113,17 @@ class dynamicchangepricacategoriesform extends dynamic_form {
 
         $mform = $this->_form;
 
-        $changepricacategorieslabel = html_writer::tag('b', get_string('changepricacategories', 'mod_booking'),
-            array('class' => 'changepricacategorieslabel'));
+        $changepricecategorieslabel = html_writer::tag('b', get_string('changepricecategories', 'mod_booking'),
+            array('class' => 'changepricecategorieslabel'));
 
-        $mform->addElement('static', 'changepricacategorieslabel', $changepricacategorieslabel);
+        $mform->addElement('static', 'changepricecategorieslabel', $changepricecategorieslabel);
 
         $mform->addElement('hidden', 'cmid', 0);
         $mform->settype('cmid', PARAM_INT);
 
         $selectarray = semester::get_pricacategories_id_name_array();
 
-        $mform->addElement('select', 'choosepricacategories', get_string('choosepricacategories', 'mod_booking'), $selectarray);
+        $mform->addElement('select', 'choosepricecategories', get_string('choosepricecategories', 'mod_booking'), $selectarray);
 
         // Buttons.
         $this->add_action_buttons();

@@ -55,6 +55,8 @@ $pricecategoriesform = new dynamicpricecategoriesform();
 $pricecategoriesform->set_data_for_dynamic_submission();
 $renderedpricecategoriesform = $pricecategoriesform->render();
 
+
+
 if ($cmid) {
     $changepricecategoriesform = new dynamicchangepricecategoriesform();
 
