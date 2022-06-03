@@ -219,12 +219,15 @@ class dynamicpricecategoriesform extends dynamic_form {
         $repeatedprices[] = $mform->createElement('text', 'pricecategoryname', get_string('pricecategoryname', 'booking'));
         $mform->setType('pricecategoryname', PARAM_TEXT);
 
-        $repeatedprices[] = $mform->createElement('text', 'pricedefaultvalue', get_string('defaultvalue', 'booking'));
+        $repeatedprices[] = $mform->createElement('text', 'pricedefaultvalue',
+        get_string('defaultvalue', 'booking'));
         $mform->setType('pricedefaultvalue', PARAM_INT);
-        // $repeateloptions['pricedefaultvalue']['helpbutton'] = ['defaultvalue', 'mod_booking'];
 
-        $repeatedprices[] = $mform->createElement('text', 'disablepricecategory', get_string('disablepricecategory', 'booking'));
+        // Checkbox.
+        $repeatedprices[] = $mform->createElement('advcheckbox', 'disablepricecategory',
+        get_string('disablepricecategory', 'booking'), null, null, [0, 1]);
         $mform->setType('disablepricecategory', PARAM_INT);
+        $mform->setDefault('disablepricecategory', 0);
 
         $repeatedprices[] = $mform->createElement('submit', 'deleteprice', get_string('deletepricebtn', 'mod_booking'));
 
@@ -232,6 +235,10 @@ class dynamicpricecategoriesform extends dynamic_form {
         if ($existingprices = $DB->get_records('booking_pricecategories')) {
             $numberofpricestoshow = count($existingprices);
         }
+
+        $repeateloptions['pricecategoryidentifier']['disabledif'] = array('disablepricecategory', 'eq', 1);
+        $repeateloptions['pricecategoryname']['disabledif'] = array('disablepricecategory', 'eq', 1);
+        $repeateloptions['pricedefaultvalue']['disabledif'] = array('disablepricecategory', 'eq', 1);
 
         $this->repeat_elements(
         $repeatedprices,
@@ -314,9 +321,6 @@ class dynamicpricecategoriesform extends dynamic_form {
 
         foreach ($formdata->pricecategoryid as $key => $value) {
 
-            //! Disabledprice category -> checkbox
-            //! we need to determine 'ordernum' for add price. 
-            // For this, I need to look through the last ordernum in the database and add [+1] to mine. counter...
 
             // Counter.
             $counter = (int)substr($key, -1);
@@ -335,7 +339,7 @@ class dynamicpricecategoriesform extends dynamic_form {
                     $data->identifier = $formdata->pricecategoryidentifier[$key];
                     $data->name = $formdata->pricecategoryname[$key];
                     $data->defaultvalue = $formdata->pricedefaultvalue[$key];
-                    $data->disabled = $formdata->pricecategorydisabled[$key];
+                    $data->disabled = $formdata->disablepricecategory[$key];
 
                     $updates[] = $data;
 
@@ -353,7 +357,7 @@ class dynamicpricecategoriesform extends dynamic_form {
                 $data->identifier = $formdata->pricecategoryidentifier[$key];
                 $data->name = $formdata->pricecategoryname[$key];
                 $data->defaultvalue = $formdata->pricedefaultvalue[$key];
-                $data->disabled = $formdata->pricecategorydisabled[$key];
+                $data->disabled = $formdata->disablepricecategory[$key];
 
                 $inserts[] = $data;
             }
