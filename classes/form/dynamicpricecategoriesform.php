@@ -106,7 +106,7 @@ class dynamicpricecategoriesform extends dynamic_form {
                 $data->pricecategoryidentifier[] = trim($existingpricecategory->identifier);
                 $data->pricecategoryname[] = trim($existingpricecategory->name);
                 $data->pricedefaultvalue[] = $existingpricecategory->defaultvalue;
-                $data->pricedisabled[] = $existingpricecategory->disabled;
+                $data->disablepricecategory[] = $existingpricecategory->disabled;
             }
         } else {
             // No prices found in DB.
@@ -115,7 +115,7 @@ class dynamicpricecategoriesform extends dynamic_form {
             $data->pricecategoryidentifier = [];
             $data->name = [];
             $data->pricedefaultvalue = [];
-            $data->pricedisabled = [];
+            $data->disablepricecategory = [];
         }
 
         $this->set_data($data);
@@ -239,6 +239,9 @@ class dynamicpricecategoriesform extends dynamic_form {
         $repeateloptions['pricecategoryidentifier']['disabledif'] = array('disablepricecategory', 'eq', 1);
         $repeateloptions['pricecategoryname']['disabledif'] = array('disablepricecategory', 'eq', 1);
         $repeateloptions['pricedefaultvalue']['disabledif'] = array('disablepricecategory', 'eq', 1);
+        $repeateloptions['disablepricecategory']['disabledif'] = array('pricecategoryidentifier', 'eq', 'default');
+        // If we use 'hideif' then the 'Disable price category' label are not shown on the form.
+        // $repeateloptions['disablepricecategory']['disabledif'] = array('pricecategoryidentifier', 'eq', 'default');
 
         $this->repeat_elements(
         $repeatedprices,
@@ -321,7 +324,6 @@ class dynamicpricecategoriesform extends dynamic_form {
 
         foreach ($formdata->pricecategoryid as $key => $value) {
 
-
             // Counter.
             $counter = (int)substr($key, -1);
 
@@ -333,6 +335,7 @@ class dynamicpricecategoriesform extends dynamic_form {
                 if ($data->identifier !== $formdata->pricecategoryidentifier[$key]
                     || $data->name !== $formdata->pricecategoryname[$key]
                     || $data->defaultvalue !== $formdata->pricedefaultvalue[$key]
+                    || $data->disabled !== $formdata->disablepricecategory[$key]
                 ) {
                     $data->id = $value;
                     $data->ordernum = $formdata->pricecategoryordernum[$key];
