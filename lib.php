@@ -933,9 +933,10 @@ function booking_update_options($optionvalues, $context) {
 
         // Elective.
         // Save combination arrays to DB.
-        booking_elective::addcombinations($option->id, $optionvalues->mustcombine, 1);
-        booking_elective::addcombinations($option->id, $optionvalues->mustnotcombine, 0);
-
+        if ($option->credits !== "") {
+            booking_elective::addcombinations($option->id, $optionvalues->mustcombine, 1);
+            booking_elective::addcombinations($option->id, $optionvalues->mustnotcombine, 0);
+        }    
         if (isset($optionvalues->shorturl)) {
             $option->shorturl = $optionvalues->shorturl;
         } else {
