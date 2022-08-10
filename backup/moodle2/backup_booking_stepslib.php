@@ -144,7 +144,7 @@ class backup_booking_activity_structure_step extends backup_activity_structure_s
         $other->set_source_table('booking_other', array('optionid' => backup::VAR_PARENTID));
         $optiondate->set_source_table('booking_optiondates', array('bookingid' => backup::VAR_PARENTID));
         $customfield->set_source_table('booking_customfields', array('bookingid' => backup::VAR_PARENTID));
-        $combination->set_source_table('booking_combinations', array('bookingid' => backup::VAR_PARENTID));
+        $combination->set_source_table('booking_combinations', array('id' => backup::VAR_PARENTID));
 
         // All the rest of elements only happen if we are including user info.
         if ($userinfo) {
