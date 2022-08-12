@@ -25,6 +25,7 @@
         <FIELD NAME="waitingtext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The content of the email to send to the users when a booking has been added to the waiting list"/>
         <FIELD NAME="statuschangetext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The content of the email to send to the users when a booking status has changed"/>
         <FIELD NAME="deletedtext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The content of the email to send to the users when a booking has been cancelled"/>
+        <FIELD NAME="bookingchangedtext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Message text to be sent to booked users when a booking option (or session) has been changed."/>
         <FIELD NAME="maxperuser" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Maximum number of bookings that each user can make (reset when an event passes)"/>
         <FIELD NAME="sendmailtobooker" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Send mails to booker instead to booked users"/>
         <FIELD NAME="duration" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Duration - info field."/>
@@ -40,6 +41,7 @@
         <FIELD NAME="enablecompletion" TYPE="int" LENGTH="3" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="For activity completion API!"/>
         <FIELD NAME="pollurlteachers" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="pollurlteacherstext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="activitycompletiontext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="cancancelbook" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Can cancel or book when the seminar is started?"/>
         <FIELD NAME="conectedbooking" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="showinapi" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
@@ -83,6 +85,9 @@
         <FIELD NAME="teacherroleid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="allowupdatedays" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="How many days before closing unenrolment."/>
         <FIELD NAME="templateid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="showdescriptionmode" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Setting that specifies how to show descriptions (0 = modal / 1 = inline)."/>
+        <FIELD NAME="showlistoncoursepage" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Setting that specifies if a list of available booking options should be shown on the coursepage."/>
+        <FIELD NAME="coursepageshortinfo" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="defaultoptionsort" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="text" SEQUENCE="false"/>
         <FIELD NAME="showviews" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="mybooking,myoptions,showall,showactive,myinstitution" SEQUENCE="false" COMMENT="Which views are shown in view.php"/>
         <FIELD NAME="customtemplateid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
