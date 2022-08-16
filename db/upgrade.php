@@ -1420,7 +1420,6 @@ function xmldb_booking_upgrade($oldversion) {
         // Booking savepoint reached.
         upgrade_mod_savepoint(true, 2017040600, 'booking');
     }
-
     if ($oldversion < 2017081401) {
         // Define field daystonotify2 to be added to booking.
         $table = new xmldb_table('booking');
@@ -2594,7 +2593,7 @@ function xmldb_booking_upgrade($oldversion) {
         // Booking savepoint reached.
         upgrade_mod_savepoint(true, 2022071100, 'booking');
     }
-    if ($oldversion < 2022080901) {
+    if ($oldversion < 2022071801) {
         // Add field consecutive to instance.
         $table = new xmldb_table('booking');
 
@@ -2618,24 +2617,23 @@ function xmldb_booking_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+
         $field = new xmldb_field('enforceorder', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
 
         // Conditionally launch add field enforceorder.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+
         // Add field credits to booking options.
         $table = new xmldb_table('booking_options');
         $field = new xmldb_field('credits', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
- 
+
         // Conditionally launch add field optiondateid.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-         // Booking savepoint reached.
-         upgrade_mod_savepoint(true, 2022080901, 'booking');
-    }
-    if ($oldversion < 2022080902) {
+
         // Add booking combinations table:
         $table = new xmldb_table('booking_combinations');
         // Adding fields to table booking_instancetemplate.
@@ -2647,12 +2645,15 @@ function xmldb_booking_upgrade($oldversion) {
 
         // Adding keys to table booking_instancetemplate.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
         // Conditionally launch create table for booking_instancetemplate.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
+
         // Booking savepoint reached.
-        upgrade_mod_savepoint(true, 2022080902, 'booking');
-    } 
+        upgrade_mod_savepoint(true, 2022071801, 'booking');
+    }
+
     return true;
 }
