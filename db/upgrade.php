@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 function xmldb_booking_upgrade($oldversion) {
     global $DB;
 
@@ -1864,7 +1862,7 @@ function xmldb_booking_upgrade($oldversion) {
 
     if ($oldversion < 2019071701) {
 
-        // Change title of booking option to char
+        // Change title of booking option to char.
         $table = new xmldb_table('booking_options');
         $field = new xmldb_field('text', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'bookingid');
         if ($dbman->field_exists($table, $field)) {
@@ -1950,7 +1948,8 @@ function xmldb_booking_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
         $table = new xmldb_table('booking');
-        $field = new xmldb_field('showviews', XMLDB_TYPE_CHAR, '255', null, null, null, 'mybooking,myoptions,showall,showactive,myinstitution', 'defaultoptionsort');
+        $field = new xmldb_field('showviews', XMLDB_TYPE_CHAR, '255', null, null, null,
+            'mybooking,myoptions,showall,showactive,myinstitution', 'defaultoptionsort');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -1973,7 +1972,8 @@ function xmldb_booking_upgrade($oldversion) {
         }
         // Add field for views to show in view.php.
         $table = new xmldb_table('booking');
-        $field = new xmldb_field('showviews', XMLDB_TYPE_CHAR, '255', null, null, null, 'mybooking,myoptions,showall,showactive,myinstitution', 'defaultoptionsort');
+        $field = new xmldb_field('showviews', XMLDB_TYPE_CHAR, '255', null, null, null,
+            'mybooking,myoptions,showall,showactive,myinstitution', 'defaultoptionsort');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -1986,7 +1986,7 @@ function xmldb_booking_upgrade($oldversion) {
 
         // Define field autcractive to be added to booking.
         $table = new xmldb_table('booking');
-        $field = new xmldb_field('customtemplateid', XMLDB_TYPE_INTEGER, '10', null, null, null, null,'showviews');
+        $field = new xmldb_field('customtemplateid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'showviews');
 
         // Conditionally launch add field autcractive.
         if (!$dbman->field_exists($table, $field)) {
@@ -2030,7 +2030,7 @@ function xmldb_booking_upgrade($oldversion) {
     if ($oldversion < 2020082601) {
         // Define field to be renamed.
         $table = new xmldb_table('booking');
-        $field = new xmldb_field('customteplateid', XMLDB_TYPE_INTEGER, '10', null, null, null, null,'showviews');
+        $field = new xmldb_field('customteplateid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'showviews');
 
         // Conditionally launch renaming the field.
         if ($dbman->field_exists($table, $field)) {
@@ -2052,19 +2052,20 @@ function xmldb_booking_upgrade($oldversion) {
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
-        // Define table booking_instancetemplate to be created.
+
+        // Define table booking_customreport to be created.
         $table = new xmldb_table('booking_customreport');
 
-        // Adding fields to table booking_instancetemplate.
+        // Adding fields to table booking_customreport.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('course', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('name', XMLDB_TYPE_CHAR, '128', null, XMLDB_NOTNULL, null, null);
 
-        // Adding keys to table booking_instancetemplate.
+        // Adding keys to table booking_customreport.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
         $table->add_index('course', XMLDB_INDEX_NOTUNIQUE, ['course']);
 
-        // Conditionally launch create table for booking_instancetemplate.
+        // Conditionally launch create table for booking_customreport.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
@@ -2109,70 +2110,6 @@ function xmldb_booking_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021052700, 'booking');
     }
 
-    if ($oldversion < 2021060200) {
-        // Add field consecutive to instance.
-        $table = new xmldb_table('booking');
-
-        $field = new xmldb_field('iselective', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
-
-        // Conditionally launch add field iselecitve.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        $field = new xmldb_field('consumeatonce', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
-
-        // Conditionally launch add field consumeatonce.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        $field = new xmldb_field('maxcredits', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
-
-        // Conditionally launch add field maxcredits.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        $field = new xmldb_field('enforceorder', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
-
-        // Conditionally launch add field enforceorder.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-
-        // Add field credits to booking options.
-        $table = new xmldb_table('booking_options');
-        $field = new xmldb_field('credits', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
-
-        // Conditionally launch add field optiondateid.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // Add booking combinations table:
-        $table = new xmldb_table('booking_combinations');
-        // Adding fields to table booking_instancetemplate.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('optionid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $table->add_field('otheroptionid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $table->add_field('othercourseid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $table->add_field('cancombine', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-
-        // Adding keys to table booking_instancetemplate.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-
-        // Conditionally launch create table for booking_instancetemplate.
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-
-
-        // Booking savepoint reached.
-        upgrade_mod_savepoint(true, 2021060200, 'booking');
-    }
-
     if ($oldversion < 2021061400) {
 
         // Define field bookingchangedtext to be added to booking.
@@ -2187,7 +2124,7 @@ function xmldb_booking_upgrade($oldversion) {
         // Booking savepoint reached.
         upgrade_mod_savepoint(true, 2021061400, 'booking');
     }
-    
+
     if ($oldversion < 2021061601) {
 
         // Define field showdescriptionmode to be added to booking.
@@ -2203,7 +2140,6 @@ function xmldb_booking_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021061601, 'booking');
     }
 
-    
     if ($oldversion < 2021061603) {
 
         // Define field showlistoncoursepage to be added to booking.
@@ -2658,6 +2594,65 @@ function xmldb_booking_upgrade($oldversion) {
         // Booking savepoint reached.
         upgrade_mod_savepoint(true, 2022071100, 'booking');
     }
+    if ($oldversion < 2022080901) {
+        // Add field consecutive to instance.
+        $table = new xmldb_table('booking');
 
+        $field = new xmldb_field('iselective', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
+
+        // Conditionally launch add field iselecitve.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('consumeatonce', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
+
+        // Conditionally launch add field consumeatonce.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('maxcredits', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
+
+        // Conditionally launch add field maxcredits.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('enforceorder', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
+
+        // Conditionally launch add field enforceorder.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Add field credits to booking options.
+        $table = new xmldb_table('booking_options');
+        $field = new xmldb_field('credits', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
+ 
+        // Conditionally launch add field optiondateid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+         // Booking savepoint reached.
+         upgrade_mod_savepoint(true, 2022080901, 'booking');
+    }
+    if ($oldversion < 2022080902) {
+        // Add booking combinations table:
+        $table = new xmldb_table('booking_combinations');
+        // Adding fields to table booking_instancetemplate.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('optionid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('otheroptionid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('othercourseid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('cancombine', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+
+        // Adding keys to table booking_instancetemplate.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        // Conditionally launch create table for booking_instancetemplate.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        // Booking savepoint reached.
+        upgrade_mod_savepoint(true, 2022080902, 'booking');
+    } 
     return true;
 }
