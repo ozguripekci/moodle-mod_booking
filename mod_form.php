@@ -19,6 +19,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->dirroot . '/mod/booking/lib.php');
+use mod_booking\semester;
+use mod_booking\utils\wb_payment;
 
 
 class mod_booking_mod_form extends moodleform_mod {
